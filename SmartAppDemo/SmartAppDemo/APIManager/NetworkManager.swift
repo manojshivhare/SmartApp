@@ -12,6 +12,9 @@ import SystemConfiguration
 
 class ApiManager: NSObject {
     
+    typealias ImageSuccessHandler = (_ image : UIImage) -> ()
+    typealias ErrorHandler = (_ error : Error) -> ()
+    
     static let shared = ApiManager()
     let session = URLSession(configuration: .default)
     var request : NSMutableURLRequest = NSMutableURLRequest()
@@ -53,6 +56,43 @@ class ApiManager: NSObject {
             self.activityIndicator?.stopAnimating()
             self.activityIndicator?.removeFromSuperview()
         }
+    }
+    
+    //MARK: Download image from server
+    func downloadImageFile(urlString:String,
+                           success:@escaping (ImageSuccessHandler),
+                           failure:@escaping (ErrorHandler) ) {
+        
+        let url = URL(string: urlString)
+        
+        guard let unwrappedURL = url else {
+            return
+        }
+        
+        let task = URLSession.shared.downloadTask(with: unwrappedURL, completionHandler: {(localURL, response, error) in
+            
+            guard error == nil else {
+                failure(error!)
+                return
+            }
+            
+            if let fileURL = localURL {
+                
+                do {
+                    let imageData = try Data(contentsOf: fileURL)
+                    if let image = UIImage(data: imageData) {
+                        success(image)
+                    }
+                    
+                }
+                catch let error as NSError {
+                    failure(error)
+                }
+            }
+            
+        })
+        
+        task.resume()
     }
     
 }

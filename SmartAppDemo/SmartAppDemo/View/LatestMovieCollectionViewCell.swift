@@ -18,32 +18,21 @@ class LatestMovieCollectionViewCell: UICollectionViewCell {
     
     //Set up value into outlet
        var dataModelDic: Results! {
-           didSet {
-            let imageURLStr = String(format: "https://image.tmdb.org/t/p/w342/%@",self.dataModelDic.poster_path!)
-               
-               //download image from url
-               self.getDataFromImageURL(from: URL(string:imageURLStr)!) { (image) in
-                   self.movieImageView.image = image
-               }
-               
-               //set contact name
-               self.movieTitleLabel.text = self.dataModelDic.title
-               self.movieDescriptionLabel.text = self.dataModelDic.overview
-           }
+        didSet {
+            let imageURLStr = String(format: "https://image.tmdb.org/t/p/w342%@",self.dataModelDic.poster_path!)
+            
+            //download image from url
+            ApiManager.shared.downloadImageFile(urlString: imageURLStr, success: { (image) in
+                DispatchQueue.main.async {
+                    self.movieImageView.image = image
+                }
+            }) { (error) in
+                print(error.localizedDescription)
+            }
+            
+            //set movie name
+            self.movieTitleLabel.text = self.dataModelDic.title
+            self.movieDescriptionLabel.text = self.dataModelDic.overview
+        }
        }
-    
-    //MARK: Download image from URL
-    func getDataFromImageURL(from url: URL, completionBlock: @escaping (UIImage) -> ()) {
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
-                let data = data, error == nil,
-                let image = UIImage(data: data) else    {
-                    return
-            }
-            DispatchQueue.main.async() { () -> Void in
-                completionBlock(image)
-            }
-        }.resume()
-    }
 }
