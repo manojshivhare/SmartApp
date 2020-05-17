@@ -16,6 +16,9 @@ class TopRatedCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var cellDescriptionLabel: UILabel!
     
+    @IBOutlet weak var cellDeleteBtn: UIButton!
+    
+    
     
     //Set up value into outlet
     var dataModelDic: Results! {
