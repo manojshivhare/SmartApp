@@ -127,10 +127,16 @@ extension TopRatedMovieViewController : UICollectionViewDelegate, UICollectionVi
     }
     
     //MARK: Selector Method Action
-      @objc func deleteCell(sender:UIButton){
-          self.topRatedDataArr?.remove(at: sender.tag)
-          topRatedCollectionView.reloadData()
-      }
+    @objc func deleteCell(sender:UIButton){
+        if isDataFiltered {
+            self.topRatedFilterDataArr?.remove(at: sender.tag)
+        }
+        else{
+            self.topRatedDataArr?.remove(at: sender.tag)
+        }
+        
+        topRatedCollectionView.reloadData()
+    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         topRatedDataDic = topRatedDataArr?[indexPath.item]

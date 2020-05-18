@@ -134,7 +134,13 @@ extension LatestMovieViewController : UICollectionViewDelegate, UICollectionView
     
     //MARK: Selector Method Action
     @objc func deleteCell(sender:UIButton){
-        self.latestMoviewDataArr?.remove(at: sender.tag)
+        if isDataFiltered {
+            self.latestMoviewFilterDataArr?.remove(at: sender.tag)
+        }
+        else{
+            self.latestMoviewDataArr?.remove(at: sender.tag)
+        }
+        
         latestMoviewCollectionView.reloadData()
     }
     
